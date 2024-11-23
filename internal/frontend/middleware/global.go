@@ -25,7 +25,7 @@ import (
 )
 
 func SetupGlobalMiddleware(handler http.Handler) http.Handler {
-	next := cors(handler)
+	next := handler
 	next = middleware.RequestID(next)
 	if appLogger != nil {
 		next = logging(next)
@@ -116,18 +116,5 @@ func prefixChecker(next http.Handler) http.Handler {
 					defaultHandler.ServeHTTP(w, r)
 				}
 			})).ServeHTTP(w, r)
-		})
-}
-
-func cors(h http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Add("Access-Control-Allow-Origin", "*")
-			w.Header().Add("Access-Control-Allow-Methods", "*")
-			w.Header().Add("Access-Control-Allow-Headers", "*")
-			if r.Method == http.MethodOptions {
-				return
-			}
-			h.ServeHTTP(w, r)
 		})
 }
